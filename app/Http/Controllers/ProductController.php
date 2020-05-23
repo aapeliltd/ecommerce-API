@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\ProductNotFoundException;
 use App\Http\Requests\ProductRequest;
 use App\Http\Resources\Product\ProductCollection;
 use App\Http\Resources\Product\ProductResource;
 use App\Model\Product;
+use GuzzleHttp\Psr7\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
@@ -81,8 +84,10 @@ class ProductController extends Controller
      * @param  \App\Model\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function update(ProductRequest $request, Product $product)
+    public function update(Request $request, Product $product)
     {
+        $this->checkProduct($product);
+
         $request['details'] = $request->description;
         unset($request['description']);
         $product->update($request->all());
@@ -99,7 +104,14 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
+        $this->checkProduct($product);
         $product->delete();
         return response(null, Response::HTTP_NO_CONTENT);
+    }
+
+    protected function checkProduct($product) {
+        if(Auth::id() != $product->id) {
+            throw new ProductNotFoundException();
+        }
     }
 }

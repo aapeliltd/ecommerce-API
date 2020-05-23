@@ -13,8 +13,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\Model\Product::class, 50)->create()->each(function ($product) {
+        /*factory(App\Model\Product::class, 50)->create()->each(function ($product) {
             $product->reviews()->save(factory(App\Model\Review::class)->make());
         });
+        */
+
+       // factory(App\User::class, 10)->create();
+        factory(App\Model\Product::class, 50)->create();
+        factory(App\Model\Review::class, 300)->create();
+
     }
 }
